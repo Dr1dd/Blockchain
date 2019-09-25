@@ -28,14 +28,14 @@ if(sz>0){
 		for(std::string::size_type i = 0; i < hashSize; i++){
 			
 			if(i == 0 ) {
-					first = a[i];
-					first = ToHex(first, false);
+				first = a[i];
+				first = ToHex(first, false);
 				b[i] = first[0] * sz * a[i] %15;
 			    val = int(b[i]);
 		        valueCheck(val, b, a, i);
 			}
 			if(i <= sz && i > 0){
-					if (sk2 == sz) sk2 =0;
+				if (sk2 == sz) sk2 =0;
 				b[i] = (b[i-1] * a[i] * b[sk2]) %127;
 				val = int(b[i]);
 		        valueCheck(val, b, a, i);
@@ -46,7 +46,7 @@ if(sz>0){
 				b[i] = (b[i-1] * b[sk2]) %127;
 				val = int(b[i]);
 				valueCheck(val, b, a, i);
-						sk2++;
+				sk2++;
 			}
 	}
 		b = ToHex(b, false);
@@ -129,8 +129,12 @@ string Skaitymas(int argc, char* argv[]){
 				cout << "Iveskite failo pavadinima (be .txt)" << endl;
 				std::cin >> file;
 				std::ifstream fd("bandymai/"+file+".txt");
-				if(!fd){
-					cout<<"failo nera" << endl;
+		
+				for(;;){
+					cout<<"Tokio failo nera bandykite irasyti failo pavadinima is naujo" << endl;
+					std::cin >> file;
+					std::ifstream fd("bandymai/"+file+".txt");
+					if(fd) break;
 					return 0;
 				}
 				string b((std::istreambuf_iterator<char>(fd)), std::istreambuf_iterator<char>());
@@ -180,12 +184,16 @@ string valueCheck(int & val, string & b, string a, int i ){
 string Compress(string &b, string a, int hashSize){
 	int skaicius = 0;
 	int sum = 0;
+	int gSum = 0;
 	int j = 0;
 	int daliklis = a.length()/hashSize;
+	for(std::string::size_type v = 0; v < a.size(); v++){
+		gSum += a[v];
+	}
 	for(std::string::size_type i = 0; i < a.size(); i++){
 		sum = sum + a[i];
 		if(skaicius == daliklis){
-			b[j] = sum / daliklis;
+			b[j] = sum / daliklis*gSum %127;
 			skaicius = 0;
 			sum = 0;
 			j++;
