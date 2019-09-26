@@ -1,18 +1,19 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <chrono>
 #include <iomanip>
 #include <cmath> 
 using std::string;
 using std::cout;
 using std::endl;
 
-string Skaitymas(int argc, char* argv[]);
+string Skaitymas(int argc, char* argv[], int & lnsk);
 string ToHex(const string &, bool upper_case);
 string valueCheck(int &, string &, string a, int i);
 string Compress(string &b, string a, int hashSize);
 
-string Hashish(string &a){ 
+string Hashish(string &a, double &laikoSuma){ 
 int sz=0;
 string b;
 string first;
@@ -21,36 +22,40 @@ int sk2 = 0;
 int val;
 int sz2=0;
 sz = a.size();
+int fullSum = 1;
+
+auto start = std::chrono::high_resolution_clock::now();
+for(std::string::size_type j= 0; j < a.size(); j++){
+	fullSum += a[j] * j;
+}
 if(sz>0){
 	if(a.size()<=hashSize){
 		b.resize(hashSize);
 		sz2 = hashSize-sz;
 		for(std::string::size_type i = 0; i < hashSize; i++){
-			
 			if(i == 0 ) {
 				first = a[i];
 				first = ToHex(first, false);
-				b[i] = first[0] * sz * a[i] %15;
+				b[i] = first[0] * sz * a[i] *fullSum %127;
 			    val = int(b[i]);
 		        valueCheck(val, b, a, i);
 			}
-			if(i <= sz && i > 0){
+			if(i < sz && i > 0){
 				if (sk2 == sz) sk2 =0;
-				b[i] = (b[i-1] * a[i] * b[sk2]) %127;
+				b[i] = (b[i-1] * a[i] * b[sk2] *fullSum) %127;
 				val = int(b[i]);
 		        valueCheck(val, b, a, i);
 			    sk2++;
 			}
-			if(i>sz){
+			if(i>=sz){
 				if (sk2 == sz) sk2 =0;
-				b[i] = (b[i-1] * b[sk2]) %127;
+				b[i] = (b[i-1] * b[sk2] *fullSum) %127;
 				val = int(b[i]);
 				valueCheck(val, b, a, i);
 				sk2++;
 			}
 	}
 		b = ToHex(b, false);
-
 	}
 	if(sz>hashSize){
 		b.resize(hashSize);
@@ -71,19 +76,38 @@ if(sz>0){
 		b = ToHex(b, false);
 	}
 	a = b;
-}
-cout << sz;
+}       
+		auto end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> diff = end - start;
+        laikoSuma += diff.count();
 	return a;
 }
+
 int main(int argc, char* argv[]){
 	string a;
-	a = Skaitymas(argc, argv);
-	Hashish(a);
-	std::ofstream fr("output.txt");
-	fr << a;	
+	double laikoSuma = 0;
+	int lnsk = 0;
+	a = Skaitymas(argc, argv, lnsk);
+	string line;
+	if(lnsk>0){
+		std::istringstream ss(a);
+		std::ofstream fr("output.txt");
+		while(std::getline(ss,line,'\n')){
+				Hashish(line, laikoSuma);
+				fr << line;
+				fr << endl;
+		}
+	}
+	else{
+		Hashish(a, laikoSuma);
+		std::ofstream fr("output.txt");
+		fr << a;
+	} 
+	cout << "Visas hashavimo laikas: " << laikoSuma << " s." << endl;
     return 0;
 }
-string Skaitymas(int argc, char* argv[]){
+
+string Skaitymas(int argc, char* argv[], int & lnsk){
 	string c;
 	bool fin = true;
 	string file;
@@ -102,13 +126,29 @@ string Skaitymas(int argc, char* argv[]){
 				return 0;
 			}
 			else{
+				string failoSkaitymas;
+				string b;
 				file = argv[1];
 				std::ifstream fd("bandymai/"+file);
 				if(!fd){
 					cout<<"failo nera" << endl;
 					return 0;
 				}
-				string b((std::istreambuf_iterator<char>(fd)), std::istreambuf_iterator<char>());
+								cout << "Failas bus skaitomas visas ar po viena eilute? (visas = 1, viena = 2)"<<endl;
+				std::cin >> failoSkaitymas;
+				while(failoSkaitymas!="1" &&failoSkaitymas!="2"){
+					cout << "Bandykite is naujo. (Irasykite 1 - visas failas arba 2 - viena eilute)" << endl;
+					std::cin >> failoSkaitymas;
+				}
+				if (failoSkaitymas == "1") b.assign((std::istreambuf_iterator<char>(fd)), std::istreambuf_iterator<char>());
+				if (failoSkaitymas =="2"){
+					string str;
+					while (std::getline(fd, str)){
+						b += str;
+						b.push_back('\n');
+						lnsk++;
+					}
+				}
 				fd.close();
 				return b;
 			}
@@ -122,24 +162,43 @@ string Skaitymas(int argc, char* argv[]){
 		}
 	}
 	else{
-		cout<< "Iveskite ar norite ranka rasyti ar nuskaityti failà? (R - ranka, S - skaityti faila)" <<endl;
+		cout<< "Iveskite ar norite ranka rasyti ar nuskaityti faila? (R - ranka, S - skaityti faila)" <<endl;
 		while(fin != false){
 			std::cin >> c;
+			while(c!="R" && c!= "r" && c!="s" && c!= "S"){
+				cout << "Bandykite dar karta. (Irasydami R - rasyti ranka arba S - Skaityti is failo)" << endl;
+				std::cin >> c;
+			}
 			if (c == "S" || c =="s"){
+				string failoSkaitymas;
+				string b;
 				cout << "Iveskite failo pavadinima (be .txt)" << endl;
 				std::cin >> file;
 				std::ifstream fd("bandymai/"+file+".txt");
-		
-				for(;;){
-					cout<<"Tokio failo nera bandykite irasyti failo pavadinima is naujo" << endl;
-					std::cin >> file;
-					std::ifstream fd("bandymai/"+file+".txt");
-					if(fd) break;
+				if(!fd){
+					cout<<"failo nera" << endl;
 					return 0;
 				}
-				string b((std::istreambuf_iterator<char>(fd)), std::istreambuf_iterator<char>());
+				else{
+		
+				cout << "Failas bus skaitomas visas ar po viena eilute? (visas = 1, viena = 2)"<<endl;
+				std::cin >> failoSkaitymas;
+				while(failoSkaitymas!="1" &&failoSkaitymas!="2"){
+					cout << "Bandykite is naujo. (Irasykite 1 - visas failas arba 2 - viena eilute)" << endl;
+					std::cin >> failoSkaitymas;
+				}
+				if (failoSkaitymas == "1") b.assign((std::istreambuf_iterator<char>(fd)), std::istreambuf_iterator<char>());
+				if (failoSkaitymas =="2"){
+					string str;
+					while (std::getline(fd, str)){
+						b += str;
+						b.push_back('\n');
+						lnsk++;
+					}
+				}
 				fd.close();
 				return b;
+				}
 			}
 			if (c == "R" || c == "r"){
 				cout << "Iveskite teksta, kuri norite uzhashinti" << endl;
@@ -147,15 +206,11 @@ string Skaitymas(int argc, char* argv[]){
 				return text;
 			
 			}
-			else cout<< "Iveskite is naujo" << endl;
-			cout << "Dar noresite hash'inti teksta? (taip/ne)"<< endl;
-			string pasirinkti;
-			std::cin >> pasirinkti;
-			if (pasirinkti == "ne" || pasirinkti == "Ne" || pasirinkti == "n") fin = false;
-			else return 0;
-			}
+		}
 	}
 }
+
+
 string ToHex(const string& s, bool upper_case /* = true */)
 {
     std::ostringstream ret;
@@ -165,9 +220,9 @@ string ToHex(const string& s, bool upper_case /* = true */)
     return ret.str();
 }
 string valueCheck(int & val, string & b, string a, int i ){
-	while (val < 0 || val < 16){
+	while (val < 0 || val < 16 || val ==0){
 	   if(val <0) {
-		   	b[i] = -b[i]/1.5;
+		   	b[i] = -b[i]%127;
 		   	val = int(b[i]);
 	   }
 		if(0 < val && val < 16){
@@ -175,8 +230,15 @@ string valueCheck(int & val, string & b, string a, int i ){
 			val = int(b[i]);
 		} 
 		if(val == 0){
-			b[i] = b[i-1]*a[0]%127;
-			val = int(b[i]);	
+
+			if(i != 0){
+				b[i] = b[i-1]*a.size()+a[0]%127;
+				val = int(b[i]);	
+			}
+			else {
+				b[i] = 127*a.size()+a[0]%127;
+				val = int(b[i]);		
+			}
 		} 
 	}
 		return b;
