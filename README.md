@@ -46,5 +46,20 @@ TZLI89e5Y7rwaBsOJ1S3VS3Y0RgjOcGtchUYN51FS3jdFH3vzB3TokL3UP90xlRGBqynxJCWDcgHcipj
   
   ![pic](https://imgur.com/GK2SOai.png)
   
+  Skirtumas:
+  
+  ![pic](https://imgur.com/y4Z9CqC.png)
+  
   - **Tuščias failas**
 **Ir išveskite output'us. Nepriklausomai nuo Input'o, Output'ai turi būti vienodo dydžio. Tokiu būdu pademonstruosite, kad Jūsų _hash funkcija_ atitinka 1-3-ą reikalavimus.**
+
+
+
+### 2. Ištirkite Jūsų sukurtos hash funkcijos efektyvumą: tuo tikslu suhash'uokite kiekvieną eilutę iš konstitucija.txt failo. Reiktų čia matuoti, tik hash'avimo funkcijos veikimo laiką (be input'o nuskaitymo/parengimo). Reiktų pateikti bendrą suminį visų hash'avimų laiką.
+
+  ![pic](https://imgur.com/uV0nMgv.png)
+  
+  Pavyzdys:
+  
+  ![pic](https://imgur.com/D7BAnX0.png)
+  
