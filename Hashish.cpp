@@ -280,11 +280,11 @@ string Compress(string &b, string a, int hashSize){
 }
 void GenerateAndCheck(){
 	std::vector<string> genvector;
-	genvector.reserve(200000);
+	genvector.reserve(2222222);
 	Generatevector(genvector);
 	double laikas = 0;
 	std::ofstream fr("../randomText/rezultatas.txt");
-		for(int i=0; i < 200000; i++) {
+		for(int i=0; i < 2222222; i++) {
                 Hashish(genvector[i], laikas);
                 laikas = 0;
                 if (i %2== 0) fr << genvector[i] << " ";
@@ -292,15 +292,14 @@ void GenerateAndCheck(){
         }
 	fr.close();
 		int sutampa = 0;
-   	 cout << "Rezultatai sugeneruoti. Pradedamas hash'u lyginimas" << endl;
-	for(int j =0; j<200000; j++){
-		for(int j1 =0; j1<200000; j1++){
-			if(genvector[j] == genvector[j1] && j != j1){
-				cout << "sutampa = " << genvector[j] << " " << j << " " << j1 << endl;
-                		sutampa++;
-			}
-
-		}
+    cout << "Rezultatai sugeneruoti. Pradedamas hash'u lyginimas" << endl;
+	for(int j =0; j<2222222; j++){
+	    if(j%2!=0){
+            if(genvector[j] == genvector[j-1]){
+                cout << "sutampa = " << genvector[j] << " " << j/2 << " eilute" << endl;
+                sutampa++;
+            }
+	    }
 	}
 	cout<< "Sutapimu = " << sutampa << endl;
 }
