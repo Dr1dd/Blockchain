@@ -3,15 +3,14 @@
 #include <sstream>
 #include <chrono>
 #include <iomanip>
-#include <cmath> 
+#include <cmath>
+#include <vector>
+#include <hashish.h>
+
 using std::string;
 using std::cout;
 using std::endl;
 
-string Skaitymas(int argc, char* argv[], int & lnsk);
-string ToHex(const string &, bool upper_case);
-string valueCheck(int &, string &, string a, int i);
-string Compress(string &b, string a, int hashSize);
 
 string Hashish(string &a, double &laikoSuma){ 
 int sz=0;
@@ -20,7 +19,7 @@ string first;
 int hashSize = 16;
 int sk2 = 0;
 int val;
-int sz2=0;
+//int sz2=0;
 sz = a.size();
 int fullSum = 1;
 
@@ -31,25 +30,34 @@ for(std::string::size_type j= 0; j < a.size(); j++){
 if(sz>0){
 	if(a.size()<=hashSize){
 		b.resize(hashSize);
-		sz2 = hashSize-sz;
+		//sz2 = hashSize-sz;
 		for(std::string::size_type i = 0; i < hashSize; i++){
 			if(i == 0 ) {
 				first = a[i];
 				first = ToHex(first, false);
-				b[i] = first[0] * sz * a[i] *fullSum %127;
+				//cout << first[0] <<endl;
+				b[i] = (first[0]  * sz * a[i] *a[sz-1] *fullSum) %127;
+				if(b[i] == 0) b[i] = (first[0]  *a[sz-1] * sz * a[i] *fullSum) %113;
+               // cout << first[0] << " " << sz << " " << a[i] << " " << fullSum << endl;
 			    val = int(b[i]);
 		        valueCheck(val, b, a, i);
 			}
 			if(i < sz && i > 0){
 				if (sk2 == sz) sk2 =0;
-				b[i] = (b[i-1] * a[i] * b[sk2] *fullSum) %127;
+				b[i] = (b[i-1] * a[i] *a[i-1] * b[sk2] *fullSum) %127;
+                //cout << int(b[i]) << " as" <<  endl;
+                if(int(b[i]) == 0){
+                    b[i] = (b[i-1] * a[i] *a[i-1] * b[sk2] *fullSum) %113;
+                }
+                //cout << int(b[i]) << " asdg " <<endl;
 				val = int(b[i]);
 		        valueCheck(val, b, a, i);
 			    sk2++;
 			}
 			if(i>=sz){
 				if (sk2 == sz) sk2 =0;
-				b[i] = (b[i-1] * b[sk2] *fullSum) %127;
+				b[i] = (b[i-1] * b[sk2] * a[i%sz] *fullSum) %127;
+                if(b[i] == 0) b[i] = (b[i-1] * a[i%sz] * b[sk2] *fullSum) %113;
 				val = int(b[i]);
 				valueCheck(val, b, a, i);
 				sk2++;
@@ -59,16 +67,18 @@ if(sz>0){
 	}
 	if(sz>hashSize){
 		b.resize(hashSize);
-		sz2 = sz-hashSize;
+		//sz2 = sz-hashSize;
 		b= Compress(b, a, hashSize);
 		for(std::string::size_type i = 0; i < hashSize; i++){
 			if(i != 0) {
-				b[i] = sz*b[i-1]*i %127;
+				b[i] = (sz*b[i-1]*i) %127;
+                if(b[i] == 0) b[i] = (sz*b[i-1]*i) %113;
 				val = int(b[i]);
 				valueCheck(val, b, a, i);
 			}
 			else{
-				b[i] = sz*b[0]*a[0] %127;
+				b[i] = (sz*b[0]*a[0]) %127;
+                if(b[i] == 0) b[i] = (sz*b[0]*a[0]) %113;
 				val = int(b[i]);
 				valueCheck(val, b, a, i);				
 			}
@@ -83,7 +93,7 @@ if(sz>0){
 	return a;
 }
 
-int main(int argc, char* argv[]){
+void MainHash(int argc, char* argv[]){
 	string a;
 	double laikoSuma = 0;
 	int lnsk = 0;
@@ -97,14 +107,16 @@ int main(int argc, char* argv[]){
 				fr << line;
 				fr << endl;
 		}
+		fr.close();
 	}
 	else{
 		Hashish(a, laikoSuma);
-		std::ofstream fr("output.txt");
+		std::ofstream fr("../output/output.txt");
 		fr << a;
+		fr.close();
 	} 
 	cout << "Visas hashavimo laikas: " << laikoSuma << " s." << endl;
-    return 0;
+	GenerateAndCheck();
 }
 
 string Skaitymas(int argc, char* argv[], int & lnsk){
@@ -220,23 +232,32 @@ string ToHex(const string& s, bool upper_case /* = true */)
     return ret.str();
 }
 string valueCheck(int & val, string & b, string a, int i ){
+   // cout << val << " " << i << endl;
 	while (val < 0 || val < 16 || val ==0){
 	   if(val <0) {
-		   	b[i] = -b[i]%127;
+	       if((-b[i]%127) != 0) b[i] = (-b[i]+i)%127;
+		   	else b[i] = (-b[i]+i)%113;
 		   	val = int(b[i]);
+         //  cout << val << " " << i << " 1" << endl;
 	   }
 		if(0 < val && val < 16){
-			b[i] = (b[i]+15)*2;	
+			b[i] = (b[i]+15)*2+i;
 			val = int(b[i]);
+           // cout << val << " " << i << " 2" << endl;
 		} 
 		if(val == 0){
-
+           // cout << val << " " << i << " 3" << endl;
 			if(i != 0){
-				b[i] = b[i-1]*a.size()+a[0]%127;
+				b[i] = (b[i-1]*a.size()+a[0]+i)%127;
+             //   cout << val << " " << i << " 4" << endl;
+                if(b[i] == 0) b[i] = (b[i-1]*a.size()+a[0]+i)%113;
+              //  cout << int(b[i]) <<  " " << i << " 4" << endl;
 				val = int(b[i]);	
 			}
 			else {
-				b[i] = 127*a.size()+a[0]%127;
+				b[i] = (127*a.size()+a[0]+i)%127;
+              //  cout << val << " " << i << " 5" << endl;
+				if(b[i] == 0) b[i] = (b[i-1]*a.size()+a[0]+i)%113;
 				val = int(b[i]);		
 			}
 		} 
@@ -264,4 +285,28 @@ string Compress(string &b, string a, int hashSize){
 	}
 	return b;
 }
+void GenerateAndCheck(){
+	std::vector<string> genvector;
+	genvector.reserve(200000);
+	Generatevector(genvector);
+	double laikas = 0;
+	std::ofstream fr("../randomText/rezultatas.txt");
+		for(int i=0; i < 200000; i++) {
+                Hashish(genvector[i], laikas);
+                laikas = 0;
+                if (i %2== 0) fr << genvector[i] << " ";
+                else fr << genvector[i] << endl;
+        }
+	fr.close();
+
+	int sk=0;
+	int sk1 = 0;
+	for(int j =0; j<200000; j++){
+		for(int j1 =0; j1<200000; j1++){
+			if(genvector[j] == genvector[j1] && j != j1) cout << "sutampa = " << genvector[j] << " " << j << " " << j1 << endl;
+
+		}
+	}
+}
+
 
