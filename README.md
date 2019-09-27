@@ -65,9 +65,13 @@ TZLI89e5Y7rwaBsOJ1S3VS3Y0RgjOcGtchUYN51FS3jdFH3vzB3TokL3UP90xlRGBqynxJCWDcgHcipj
   
 ### 3. Susigeneruokite bent 1000 000 atsitiktinių simbolių eilučių (string'ų) porų, pvz.: (asdfg, hijkl) apsiribojant iki 5 simbolių eilučių ilgiu ir patikrinkite, kad visais atvejais gautieji porų hash'ai nesutampa. 
 Pavyzdžiai:
+
  [Generuotas Tekstas](https://github.com/Dr1dd/Blockchain/blob/dev/randomText/generuotasTekstas.txt)
+ 
  [Hashuotas Tekstas](https://github.com/Dr1dd/Blockchain/blob/dev/randomText/rezultatas.txt)
+ 
  Tikrinimo kodas:
+ 
  ```
  		int sutampa = 0;
     cout << "Rezultatai sugeneruoti. Pradedamas hash'u lyginimas" << endl;
@@ -81,5 +85,7 @@ Pavyzdžiai:
 	}
 	cout<< "Sutapimu = " << sutampa << endl;
   ```
+  
   Rezultatas:
+  
   ![img](https://imgur.com/Ochd1nk.png)
