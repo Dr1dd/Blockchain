@@ -291,13 +291,18 @@ void GenerateAndCheck(){
                 else fr << genvector[i] << endl;
         }
 	fr.close();
-    cout << "Rezultatai sugeneruoti. Pradedamas hash'u lyginimas" << endl;
+		int sutampa = 0;
+   	 cout << "Rezultatai sugeneruoti. Pradedamas hash'u lyginimas" << endl;
 	for(int j =0; j<200000; j++){
 		for(int j1 =0; j1<200000; j1++){
-			if(genvector[j] == genvector[j1] && j != j1) cout << "sutampa = " << genvector[j] << " " << j << " " << j1 << endl;
+			if(genvector[j] == genvector[j1] && j != j1){
+				cout << "sutampa = " << genvector[j] << " " << j << " " << j1 << endl;
+                		sutampa++;
+			}
 
 		}
 	}
+	cout<< "Sutapimu = " << sutampa << endl;
 }
 
 
