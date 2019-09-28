@@ -280,8 +280,10 @@ string Compress(string &b, string a, int hashSize){
 }
 void GenerateAndCheck(){
 	std::vector<string> genvector;
+    std::vector<std::vector<string> > genDiff;
 	genvector.reserve(2222222);
-	Generatevector(genvector);
+    genDiff.reserve(100000);
+	Generatevector(genvector, genDiff);
 	double laikas = 0;
 	std::ofstream fr("../randomText/rezultatas.txt");
 		for(int i=0; i < 2222222; i++) {
