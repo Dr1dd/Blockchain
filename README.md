@@ -1,5 +1,14 @@
 # 1-oji užduotis: Hash generatorius
 Maišos funkcijos (angl. *hash function*) yra labai svarbi *blockchain* (pvz. *Bitcoin*) protokolų dalis. Hash'avimo metu bet koks įvedimo tekstas (*m*) matematinės *hash* funkcijos dėka (*h = h(m)*) yra paverčiamas unikaliu fiksuoto dydžio pseudo-atsitiktiniu skaičiumi, vadinamu *maišos kodu*.
+
+## Ko jums reikės paleisti programą:
+
+Cmake įrangos įrankio.
+
+Rekomenduojami IDE:
+
+Visual Studio ar JetBrains Clion
+
 ## (v0.1) versija:
 ### 1. Susikurkite testinių įvedimo failų pavyzdžių, tokių kad:
   - **Bent du failai būtų sudaryti tik iš vieno, tačiau skirtingo, simbolio.**
@@ -66,9 +75,9 @@ TZLI89e5Y7rwaBsOJ1S3VS3Y0RgjOcGtchUYN51FS3jdFH3vzB3TokL3UP90xlRGBqynxJCWDcgHcipj
 ### 3. Susigeneruokite bent 1000 000 atsitiktinių simbolių eilučių (string'ų) porų, pvz.: (asdfg, hijkl) apsiribojant iki 5 simbolių eilučių ilgiu ir patikrinkite, kad visais atvejais gautieji porų hash'ai nesutampa. 
 Pavyzdžiai:
 
- [Generuotas Tekstas](https://github.com/Dr1dd/Blockchain/blob/dev/randomText/generuotasTekstas.txt)
+ [Generuotas Tekstas](https://github.com/Dr1dd/Blockchain/blob/dev/randomText/3uzdGeneruotasTekstas.txt)
  
- [Hashuotas Tekstas](https://github.com/Dr1dd/Blockchain/blob/dev/randomText/rezultatas.txt)
+ [Hashuotas Tekstas](https://github.com/Dr1dd/Blockchain/blob/dev/randomText/3uzdRezultatas.txt)
  
  Tikrinimo kodas:
  
@@ -89,3 +98,18 @@ Pavyzdžiai:
   Rezultatas:
   
   ![img](https://imgur.com/Ochd1nk.png)
+  
+  
+  ### 4. Susigeneruokite bent 100 000 atsitiktinių simbolių eilučių (string'ų) porų, , pvz.: (asdfg, bsdfg) tokių kad skirtųsi jos tik vienu simboliu ir apsiribojant iki 5 simbolių eilučių ilgiu. Įvertinkite Jūsų gautų hash'ų procentinį "skirtingumą" bitų lygmenyje. Išveskite minimalią, maksimalią ir vidurkines "skirtingumo" reikšmes. Tokiu būdų įsitikinsite, kaip gerai Jūsų hash funkcija atitinka 7-ą reikalavimą.
+  
+ Sugeneruojamos 100000 porų -> kiekvienas poros dalyvis užhash'uojamas -> kiekvienas užhashuotas poros dalyvis paverčiamas į dvejetainę.
+
+![pic](https://imgur.com/DPXF1d9.png)
+
+Rezultatai:
+
+Tikrinamas kiekvienas skaičius su atitinkamu poros dalyvio skaičiumi. Randami atitikimai = prie kintamojo pridedamas +1.
+
+Suskaičiuojami ```min```, ```max```, ```average``` skirtumai tarp porų bitų lygyje.
+
+![pic](https://imgur.com/wGY6aDE.png)
