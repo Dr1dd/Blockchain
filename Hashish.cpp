@@ -141,7 +141,7 @@ string Skaitymas(int argc, char* argv[], int & lnsk){
 				string failoSkaitymas;
 				string b;
 				file = argv[1];
-				std::ifstream fd("bandymai/"+file);
+				std::ifstream fd(file);
 				if(!fd){
 					cout<<"failo nera" << endl;
 					return 0;
@@ -184,9 +184,9 @@ string Skaitymas(int argc, char* argv[], int & lnsk){
 			if (c == "S" || c =="s"){
 				string failoSkaitymas;
 				string b;
-				cout << "Iveskite failo pavadinima (be .txt)" << endl;
+				cout << "Iveskite failo pavadinima (su path)" << endl;
 				std::cin >> file;
-				std::ifstream fd("bandymai/"+file+".txt");
+				std::ifstream fd(file);
 				if(!fd){
 					cout<<"failo nera" << endl;
 					return 0;
