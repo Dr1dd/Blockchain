@@ -345,7 +345,7 @@ void GenerateAndCheck(){
         bin << endl;
         bin << "Minimalus skirtingumas (procentais) bitu lygmenyje: " <<std::fixed << std::setprecision(2) <<  procMin*100 << " %"<<endl;
         bin << "Maksimalus skirtingumas (procentais) bitu lygmenyje: " <<std::fixed << std::setprecision(2) <<  procMax*100 << " %"<<endl;
-        bin << "Skirtingumo vidurkis bit (procentais)u lygmenyje: " <<std::fixed << std::setprecision(2) <<  avgSum*100 << " %"<<endl;
+        bin << "Skirtingumo vidurkis bitu (procentais) lygmenyje: " <<std::fixed << std::setprecision(2) <<  avgSum*100 << " %"<<endl;
 
         cout << "Minimalus skirtingumas (procentais) bitu lygmenyje: " <<std::fixed << std::setprecision(2) <<  procMin*100 << " %"<<endl;
         cout << "Maksimalus skirtingumas (procentais) bitu lygmenyje: " <<std::fixed << std::setprecision(2) <<  procMax*100 << " %"<<endl;
