@@ -222,15 +222,6 @@ string Skaitymas(int argc, char* argv[], int & lnsk){
 	}
 }
 
-
-string ToHex(const string& s, bool upper_case /* = true */)
-{
-    std::ostringstream ret;
-    for (string::size_type i = 0; i < s.length(); ++i)
-        ret << std::hex << std::setw(2) << (upper_case ? std::uppercase : std::nouppercase) << (int)s[i];
-
-    return ret.str();
-}
 string valueCheck(int & val, string & b, string a, int i ){
 	while (val < 0 || val < 16 || val ==0){
 	   if(val <0) {
@@ -282,28 +273,85 @@ void GenerateAndCheck(){
 	std::vector<string> genvector;
     std::vector<std::vector<string> > genDiff;
 	genvector.reserve(2222222);
-    genDiff.reserve(100000);
+    genDiff.reserve(2);
 	Generatevector(genvector, genDiff);
-	double laikas = 0;
-	std::ofstream fr("../randomText/rezultatas.txt");
-		for(int i=0; i < 2222222; i++) {
-                Hashish(genvector[i], laikas);
-                laikas = 0;
-                if (i %2== 0) fr << genvector[i] << " ";
-                else fr << genvector[i] << endl;
-        }
-	fr.close();
-		int sutampa = 0;
-    cout << "Rezultatai sugeneruoti. Pradedamas hash'u lyginimas" << endl;
-	for(int j =0; j<2222222; j++){
-	    if(j%2!=0){
-            if(genvector[j] == genvector[j-1]){
-                cout << "sutampa = " << genvector[j] << " " << j/2 << " eilute" << endl;
-                sutampa++;
-            }
-	    }
+	string ivestis;
+	cout << "Pasirinkite kokio tikrinimo norite: Bitu lygmenyje = b | paprasto = p" << endl;
+	std::cin >> ivestis;
+	while(ivestis!="b" && ivestis != "p"){
+	    cout << "Bandykite is naujo irasydami b arba p" << endl;
+	    std::cin >> ivestis;
 	}
-	cout<< "Sutapimu = " << sutampa << endl;
+	if(ivestis == "p"){
+        double laikas = 0;
+
+        std::ofstream fr("../randomText/3uzdRezultatas.txt");
+        for(int i=0; i < 2222222; i++) {
+            Hashish(genvector[i], laikas);
+            laikas = 0;
+            if (i %2== 0) fr << genvector[i] << " ";
+            else fr << genvector[i] << endl;
+        }
+        fr.close();
+
+
+        int sutampa = 0;
+        cout << "Rezultatai sugeneruoti. Pradedamas hash'u lyginimas" << endl;
+        for(int j =0; j<2222222; j++){
+            if(j%2!=0){
+                if(genvector[j] == genvector[j-1]){
+                    cout << "sutampa = " << genvector[j] << " " << j/2 << " eilute" << endl;
+                    sutampa++;
+                }
+            }
+        }
+        cout<< "Sutapimu = " << sutampa << endl;
+    }
+	if(ivestis == "b") {
+        double laikas2 = 0;
+        string pp;
+        std::ofstream off("../randomText/4uzdHashintas1skirtumas.txt");
+        for (int i = 0; i < 100000; i++) {
+            for (int j = 0; j < 2; j++) {
+                Hashish(genDiff[j][i], laikas2);
+                laikas2 = 0;
+                if (j == 0) off << genDiff[j][i] << " ";
+                else off << genDiff[j][i] << endl;
+                genDiff[j][i] = ToBit(genDiff[j][i]);
+            }
+
+        }
+        off.close();
+
+        std::ofstream bin("../randomText/4uzdBinaryLyginimas.txt");
+        double proc;
+        double vienodi = 0;
+        double procMax = 0;
+        double procMin = 100;
+        double avgSum = 0;
+        int sz = genDiff[0][0].size();
+        for(int b = 0; b < 100000; b++) {
+            bin << genDiff[0][b] << " " << genDiff[1][b] << endl;
+            for (int h = 0; h < sz; h++) {
+                if (genDiff[0][b][h] == genDiff[1][b][h]) vienodi++;
+            }
+            proc = 1-vienodi/sz;
+            avgSum += proc;
+            if(proc > procMax) procMax = proc;
+            if(proc < procMin) procMin = proc;
+            vienodi = 0;
+        }
+        avgSum = avgSum/100000;
+        bin << endl;
+        bin << "Minimalus skirtingumas (procentais) bitu lygmenyje: " <<std::fixed << std::setprecision(2) <<  procMin*100 << " %"<<endl;
+        bin << "Maksimalus skirtingumas (procentais) bitu lygmenyje: " <<std::fixed << std::setprecision(2) <<  procMax*100 << " %"<<endl;
+        bin << "Skirtingumo vidurkis bit (procentais)u lygmenyje: " <<std::fixed << std::setprecision(2) <<  avgSum*100 << " %"<<endl;
+
+        cout << "Minimalus skirtingumas (procentais) bitu lygmenyje: " <<std::fixed << std::setprecision(2) <<  procMin*100 << " %"<<endl;
+        cout << "Maksimalus skirtingumas (procentais) bitu lygmenyje: " <<std::fixed << std::setprecision(2) <<  procMax*100 << " %"<<endl;
+        cout << "Skirtingumo vidurkis bitu lygmenyje: " <<std::fixed << std::setprecision(2) <<  avgSum*100 << " %"<<endl;
+        bin.close();
+    }
 }
 
 
