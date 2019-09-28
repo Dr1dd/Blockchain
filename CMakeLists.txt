@@ -9,5 +9,6 @@ add_executable(clionHash
         main.cpp
         Hashish.cpp
         skGeneratorius.cpp
+        Converters.cpp
         includes/hashish.h
         )
